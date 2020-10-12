@@ -2,21 +2,21 @@ package com.example.photogallery
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.BitmapFactory.decodeStream
 import android.util.Log
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import api.FlickrApi
 import api.FlickrResponse
+import api.PhotoInterceptor
 import api.PhotoResponse
+import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.converter.scalars.ScalarsConverterFactory
 
 private const val TAG = "FlickrFetchr"
 
@@ -26,18 +26,30 @@ class FlickrFetcher {
     private val flickrApi: FlickrApi
 
     init {
+        val client = OkHttpClient.Builder()
+            .addInterceptor(PhotoInterceptor())
+            .build()
+
         val retrofit: Retrofit = Retrofit.Builder()
             .baseUrl("https://www.flickr.com/")
             .addConverterFactory(GsonConverterFactory.create()) //this will convert a ResponseBody object into another type
+            .client(client)
             .build()
 
         flickrApi = retrofit.create(FlickrApi::class.java) //creates a class that implements the API interface
     }
 
-    //Gets called by PhotoGalleryViewModel and returns an empty list, and enqueue Retrofit request for photos
     fun fetchPhotos(): LiveData<List<GalleryItem>> {
+        return fetchPhotoMetadata(flickrApi.fetchPhotos())
+    }
+
+    fun searchPhotos(query: String): LiveData<List<GalleryItem>> {
+        return fetchPhotoMetadata(flickrApi.searchPhotos(query))
+    }
+
+    //Gets called by PhotoGalleryViewModel and returns an empty list, and enqueue Retrofit request for photos
+    private fun fetchPhotoMetadata(flickrRequest: Call<FlickrResponse>) : LiveData<List<GalleryItem>> {
         val responseLiveData: MutableLiveData<List<GalleryItem>> = MutableLiveData()
-        val flickrRequest: Call<FlickrResponse> = flickrApi.fetchPhotos()
 
         flickrRequest.enqueue(object : Callback<FlickrResponse> {
             override fun onFailure(call: Call<FlickrResponse>, t: Throwable) {
