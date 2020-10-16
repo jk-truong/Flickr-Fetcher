@@ -6,6 +6,15 @@ android {
     compileSdkVersion 30
     buildToolsVersion "30.0.2"
 
+    //This was added because .edit in QueryPreferences was not working
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8
+    }
+
     defaultConfig {
         applicationId "com.example.photogallery"
         minSdkVersion 21
@@ -42,4 +51,5 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
     implementation 'androidx.preference:preference:1.1.1'
     implementation 'androidx.core:core-ktx:1.3.2'
+    implementation "android.arch.work:work-runtime:1.0.1"
 }
