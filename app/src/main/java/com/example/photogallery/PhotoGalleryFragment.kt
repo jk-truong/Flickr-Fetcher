@@ -1,6 +1,7 @@
 package com.example.photogallery
 
 import android.app.DownloadManager
+import android.content.Intent
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
@@ -187,9 +188,25 @@ class PhotoGalleryFragment : VisibleFragment() {
         }
     }
 
-    //This is our viewholder implementation to display results in recyclerview
-    private class PhotoHolder(itemImageView: ImageView) : RecyclerView.ViewHolder(itemImageView) {
+    //This is our viewholder implementation to display results in recyclerview. Inner class allows you
+    //to access outer class's properties and functions
+    private inner class PhotoHolder(itemImageView: ImageView) : RecyclerView.ViewHolder(itemImageView),
+    View.OnClickListener { //Implicit intent to start up browser with photo URL.
+        private lateinit var galleryItem: GalleryItem
+
+        init {
+            itemView.setOnClickListener(this)
+        }
+
         val bindDrawable: (Drawable) -> Unit = itemImageView::setImageDrawable
+        fun bindGalleryItem(item: GalleryItem) {
+            galleryItem = item
+        }
+
+        override fun onClick(view: View) {
+            val intent = PhotoPageActivity.newIntent(requireContext(), galleryItem.photoPageUri) //This launches the activity for PhotoPageActivity
+            startActivity(intent)
+        }
     }
 
     //use inner class so that we don't need to get inflater form parent.context
@@ -207,6 +224,7 @@ class PhotoGalleryFragment : VisibleFragment() {
 
         override fun onBindViewHolder(holder: PhotoHolder, position: Int) {
             val galleryItem = galleryItems[position]
+            holder.bindGalleryItem(galleryItem)
             val placeholder: Drawable = ContextCompat.getDrawable(
                 requireContext(),
                 R.drawable.bill_up_close
