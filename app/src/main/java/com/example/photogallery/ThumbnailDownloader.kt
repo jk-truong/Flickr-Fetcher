@@ -4,10 +4,13 @@ package com.example.photogallery
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
+import android.os.Bundle
 import android.os.Handler
 import android.os.HandlerThread
 import android.os.Message
 import android.util.Log
+import android.util.LruCache
+import android.widget.ImageView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
@@ -22,7 +25,7 @@ class ThumbnailDownloader<in T>(
     private val onThumbnailDownloaded: (T, Bitmap) -> Unit
 ) : HandlerThread(TAG) {
 
-    //Observes fragment lifecycle (so that we don't make requests on config change and crash)
+    //Observes fragment lifecycle (so that we don't make additional requests on config change and crash)
     val fragmentLifecycleObserver: LifecycleObserver = object : LifecycleObserver {
 
         @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
@@ -39,7 +42,7 @@ class ThumbnailDownloader<in T>(
         }
     }
 
-    //Add a view lifecycle observer
+    //Add a view lifecycle observer. This will stop requests running when app is closed
     val viewLifecycleObserver: LifecycleObserver = object : LifecycleObserver {
 
         @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
@@ -49,6 +52,7 @@ class ThumbnailDownloader<in T>(
             requestMap.clear()
         }
     }
+
     private var hasQuit = false
     private lateinit var requestHandler: Handler
 
@@ -80,6 +84,7 @@ class ThumbnailDownloader<in T>(
         requestHandler.obtainMessage(MESSAGE_DOWNLOAD, target).sendToTarget()
     }
 
+    //This sends it back to
     private fun handleRequest(target: T) {
         val url = requestMap[target] ?: return
         val bitmap = flickrFetcher.fetchPhoto(url) ?: return
