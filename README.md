@@ -3,6 +3,7 @@
 Demo application to demonstrate the use of popular photography sharing website Flickr (https://www.flickr.com/). 
 
 Uses REST API to grab photos and display them in a grid-style RecyclerView.
+Includes a feature to search for specific types of photos (eg. search "dog", shows photos with dogs).
 
 This app demonstrates the following:
 - Fragments
