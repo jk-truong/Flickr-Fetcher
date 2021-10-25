@@ -13,3 +13,17 @@ This app demonstrates the following:
 - Image downloading via background threads
 - Messages and message handlers
 - Webview
+
+Screenshots:
+
+Home page (Grid RecyclerView)
+
+![image](https://user-images.githubusercontent.com/41808114/138782053-32cebdcd-4aa5-4c6e-a35b-1de42cc1a56d.png)
+
+Detailed View (WebView)
+
+![image](https://user-images.githubusercontent.com/41808114/138782131-7a1794c3-3cdd-491b-912a-31a6e1d4404e.png)
+
+API Search Function 
+
+![image](https://user-images.githubusercontent.com/41808114/138782166-b637efd0-c029-4ce2-9a30-9313cb73f45d.png)
